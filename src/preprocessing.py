@@ -30,8 +30,6 @@ def main():
 
     df = df[selected_columns]
 
-    df["Date"] = pd.to_datetime(df["Date"])
-
     df = df.dropna()
 
     print("\nDataset after removing missing values:")
