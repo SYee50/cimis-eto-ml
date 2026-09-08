@@ -2,11 +2,20 @@
 
 ## 1. Experiment Overview
 
-This project investigates whether weather-station measurements can be used to predict daily reference evapotranspiration (ETo).
+The goal of this project is to investigate whether weather-station measurements can be used to predict daily reference evapotranspiration (ETo).
 
 The machine learning experiments are designed based on findings from the exploratory data analysis (EDA). The EDA showed strong relationships between ETo and several weather variables, including solar radiation, air temperature, and relative humidity. It also showed a clear nonlinear seasonal pattern in ETo and differences in environmental conditions across the five CIMIS weather stations.
 
-The experiments will evaluate model performance, investigate whether seasonal information improves prediction, and assess whether the model can generalize to a weather station that was not represented during training.
+The experiments will investigate whether the models can outperform simple and linear approaches, whether seasonal information improves prediction, and whether the model can generalize to weather stations that were not represented during training.
+
+The experiments will evaluate:
+
+* Whether the machine learning models outperform the mean baseline.
+* Whether the Random Forest improves upon Linear Regression.
+* Whether adding Day of Year improves predictive performance.
+* Whether model performance changes when predicting an unseen station.
+
+Following the experiments, an error analysis will investigate where the model makes larger prediction errors and whether those errors show systematic patterns.
 
 ## 2. Research Questions
 
@@ -15,7 +24,7 @@ The experiments will address the following questions:
 1. Can weather-station measurements accurately predict daily ETo?
 2. Does a nonlinear model improve ETo prediction compared with a linear model?
 3. Does including Jul (Day of Year) improve ETo prediction by capturing seasonal patterns?
-4. Can the model generalize to a CIMIS weather station that was not represented in the training data?
+4. Can the model generalize to a CIMIS weather stations that were not represented during training?
 
 ## 3. Target Variable
 
@@ -49,7 +58,7 @@ A second feature set will add;
 
 * `Jul` - Day of Year
 
-The EDA showed that Day of Year has little linear correlation with ETo, but the relationship between Day of Year and ETo is clearly nonlinear and follows a seasonal pattern. This experiment will determine whether including Day of Year improves predictive performance.
+The EDA showed that Day of Year has little linear correlation with ETo, but the relationship between Day of Year and ETo is clearly nonlinear and follows a seasonal pattern. Experiment 2 will determine whether including Day of Year improves predictive performance.
 
 ### Excluded Variables
 
@@ -60,7 +69,7 @@ The following variables will not be used as model features:
 * `CIMIS Region`
 * `Date`
 
-Station identifiers and location labels identify observations rather than representing physical weather measurements. The initial experiments will focus on predicting ETo from environmental conditions rather than allowing the model to rely directly on station identity.
+Station identifiers and location labels identify observations rather than representing physical weather measurements. The experiments will focus on predicting ETo from environmental conditions rather than allowing the model to rely directly on station identity.
 
 ## 5. Data Splitting Strategy
 
@@ -74,28 +83,24 @@ The training set will be used to fit the models, while the test set will be rese
 
 The test set will not be used during model training.
 
+A fixed random seed of 42 will be used to make the split reproducible.
+
 ### Held-Out Station Evaluation
 
-A separate experiment will evaluate geographic generalization.
+A separate experiment will assess geographic generalization.
 
-For this experiment, observations from one CIMIS station will be excluded from training and used as the test set.
+For each station, observations from that station will be excluded from training and used as the test set. The model will be trained on the remaining four stations and evaluated on the held-out station.
 
-For example:
+This process will be repeated for all five CIMIS stations so that each station serves as the held-out test station once.
 
-**Training:**
+The five stations are:
 
 * FivePoints
 * Davis
 * Bishop
 * Calipatria/Mulberry
 
-**Testing:**
-
-* San Luis Obispo
-
-The held-out station will contain environmental conditions that were not directly represented in the training data.
-
-The initial evaluation will use San Luis Obispo as the held-out test station. A leave-one-station-out evaluation across all five stations is planned as a future extension.
+This evaluation provides a more challenging test of geographic generalization than the standard random train/test split because the model does not encounter observations from the held-out station during training.
 
 ## 6. Models
 
@@ -109,7 +114,7 @@ This establishes a reference point for determining whether the machine learning 
 
 ## Linear Regression
 
-Linear Regression will be used as the initial machine learning model/
+Linear Regression will be used as the initial machine learning model.
 
 This model is motivated by the strong linear relationships identified during EDA between ETo and variables such as:
 
@@ -195,36 +200,40 @@ The difference in performance will indicate whether Day of Year provides useful 
 
 **Research question:**
 
-Can the model predict ETo for a CIMIS station that was not represented in training?
+Can the model predict ETo for CIMIS stations that were not represented during training?
 
-The model will be trained using data from four CIMIS stations and evaluated using data from a fifth station that was excluded from training.
+The Random Forest model will be trained using data from four CIMIS stations and evaluated using data from the fifth station.
 
-For the initial evaluation:
+This process will be repeated for all five stations:
 
-**Training:**
-- FivePoints
-- Davis
-- Bishop
-- Calipatria/Mulberry
+1. FivePoints held out
+2. Davis held out
+3. Bishop held out
+4. Calipatria/Mulberry held out
+5. San Luis Obispo held out
 
-**Testing:**
-- San Luis Obispo
+For each evaluation, the held-out station will be completely excluded from model training.
 
 Performance will be evaluated using MAE, RMSE, and R².
 
-This experiment will provide evidence about whether the model can generalize to environmental conditions from a station that was not represented during training.
+This experiment provides evidence about whether the model can generalize to environmental conditions from stations that were not represented during training.
 
-## 9. Expected Analysis
+## 9. Error Analysis
 
-The results will be analyzed to determine:
+Following the three experiments, an error analysis will investigate the conditions under which the model makes larger prediction errors.
 
-* Whether the machine learning models outperform the mean baseline.
-* Whether the Random Forest improves upon Linear Regression.
-* Whether adding Day of Year improves predictive performance.
-* Whether model performance changes when predicting an unseen station.
-* Whether prediction error vary across seasons
+The analysis will examine:
 
-The results will be interpreted in the context of the EDA findings and the limitations fo the dataset.
+* Prediction errors by station.
+* Prediction errors across different ETo ranges.
+* Actual versus predicted ETo values.
+* Residuals and their relationship with actual ETo.
+* Potential systematic overprediction or underprediction.
+* Error patterns under different environmental conditions.
+
+The purpose of the error analysis is to identify patterns that may not be apparent from aggregate MAE, RMSE, and R² values alone.
+
+The error analysis will also help identify potential limitations of the model and areas for future improvement.
 
 ## 10. Limitations
 
@@ -236,19 +245,21 @@ Second, the target variable is the CIMIS-provided calculated reference evapotran
 
 Third, the standard 80/20 train/test split may contain observations from the same stations and similar environmental conditions in both sets. The held-out station experiment provides a stronger test of geographic generalization.
 
+Fourth, the held-out station evaluation includes only five stations and therefore provides evidence of geographic generalization within the selected dataset rather than proving generalization to arbitrary locations.
+
 Finally, model performance metrics alone do not establish that the model is suitable for operational use. The results must be interpreted alongside error analysis and the conditions represented in the evaluation data.
 
 ## 11. Future Extensions
 
 Future iterations of the project may investigate:
 
-* Leave-one-station-out evaluation across all five stations.
+* Leave-one-station-out evaluation with additional CIMIS stations.
 * Cyclical encoding of Day of Year using sine and cosine transformations.
 * Additional machine learning models.
 * Hyperparameter tuning.
 * Additional CIMIS weather stations.
 * Longer historical datasets.
-* More detailed error analysis.
+* More detailed error analysis across ETo ranges, stations, and season.
 * Model explainability techniques.
 * Evaluation under specific environmental conditions or seasons.
 
