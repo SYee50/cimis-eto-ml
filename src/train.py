@@ -195,11 +195,27 @@ def run_experiment_3(df, features):
         print(f"\nExperiment 3: {station} station-hold-out predictions:")
         print(predictions[:5])
 
-        predictions_df = pd.DataFrame({
-            "Station": station,
-            "Actual ETo (mm)": y_test.to_numpy(),
-            "Random Forest": predictions
-        })
+        predictions_df = test_df[[
+            "Station Number",
+            "Station Name",
+            "CIMIS Region",
+            "Date",
+            "Jul",
+            "ETo (mm)",
+            "Precip (mm)",
+            "Avg Sol Rad (W/m²)",
+            "Avg Vap Pres (kPa)",
+            "Max Air Temp (°C)",
+            "Min Air Temp (°C)",
+            "Avg Air Temp (°C)",
+            "Max Rel Hum (%)",
+            "Min Rel Hum (%)",
+            "Avg Rel Hum (%)",
+            "Dew Point (°C)",
+            "Avg Wind Speed (m/s)"
+        ]].copy()
+
+        predictions_df["Random Forest"] = predictions
 
         results.append(predictions_df)
 
@@ -210,6 +226,7 @@ def run_experiment_3(df, features):
     predictions_df.to_csv(output_path, index=False)
 
     print(f"\nSaved Experiment 3 predictions to {output_path}")
+
 
 def main():
     """
