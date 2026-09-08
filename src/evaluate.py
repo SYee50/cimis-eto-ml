@@ -109,13 +109,13 @@ def evaluate_experiment_3():
 
     results = {}
 
-    for station in predictions_df["Station"].unique():
+    for station in predictions_df["Station Name"].unique():
         station_df = predictions_df[
-            predictions_df["Station"] == station
+            predictions_df["Station Name"] == station
         ]
 
         metrics = calculate_metrics(
-            station_df["Actual ETo (mm)"],
+            station_df["ETo (mm)"],
             station_df["Random Forest"]
         )
 
