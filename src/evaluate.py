@@ -38,7 +38,7 @@ def evaluate_experiment_1():
 
     for model in models:
         metrics = calculate_metrics(
-            predictions_df["Actual ETo (mm)"],
+            predictions_df["ETo (mm)"],
             predictions_df[model]
         )
 
@@ -77,7 +77,7 @@ def evaluate_experiment_2():
 
     for model in models:
         metrics = calculate_metrics(
-            predictions_df["Actual ETo (mm)"],
+            predictions_df["ETo (mm)"],
             predictions_df[model]
         )
 

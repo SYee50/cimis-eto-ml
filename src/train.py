@@ -93,7 +93,7 @@ def run_experiment_1(df, features):
 
     # Save Predictions
     predictions_df = pd.DataFrame({
-        "Actual ETo (mm)": y_test.to_numpy(),
+        "ETo (mm)": y_test.to_numpy(),
         "Baseline": baseline_predictions,
         "Linear Regression": linear_predictions,
         "Random Forest": random_forest_predictions
@@ -155,7 +155,7 @@ def run_experiment_2(df, features):
 
     # Save predictions
     predictions_df = pd.DataFrame({
-        "Actual ETo (mm)": y_test.to_numpy(),
+        "ETo (mm)": y_test.to_numpy(),
         "Weather Only": weather_predictions,
         "Weather + Day of Year": seasonality_predictions
     })
